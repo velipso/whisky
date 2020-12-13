@@ -1,6 +1,6 @@
 //
 // Copyright 2020 Sean Connelly (@velipso), https://sean.cm
-// MIT License
+// The Unlicense License
 // Project Home: https://github.com/velipso/whisky
 //
 
