@@ -1,5 +1,6 @@
 //
-// Copyright 2020 Sean Connelly (@velipso), https://sean.cm
+// Whisky - a collection of stateless RNGs
+// by Sean Connelly (@velipso), https://sean.cm
 // The Unlicense License
 // Project Home: https://github.com/velipso/whisky
 //
