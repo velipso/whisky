@@ -1,7 +1,7 @@
 whisky
 ======
 
-# Search in progress!
+## Search in progress!
 
 Whisky is a collection of stateless random number generators.  These can be thought of as tiny hash
 functions, or pure noise functions.
