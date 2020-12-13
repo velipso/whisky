@@ -1,2 +1,4 @@
-# whisky
-A collection of stateless random number generators
+whisky
+======
+
+Whisky is a collection of stateless random number generators.
