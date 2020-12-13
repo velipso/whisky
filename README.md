@@ -47,8 +47,9 @@ For a cool talk on them, see
 [Math for Game Programmers: Noise-Based RNG](https://www.youtube.com/watch?v=LWFzPP8ZbdU) by
 Squirrel Eiserloh.
 
-In summary, stateless RNGs are pure functions, which means they play nice with threads, and can be
-accessed out of order.  They are not seeded like typical RNGs.
+In summary, stateless RNGs are [pure functions](https://en.wikipedia.org/wiki/Pure_function), which
+means they play nice with threads, optimizers, and can be accessed out of order.  They are not
+seeded like typical RNGs.
 
 If you prefer having state, you can easily add it back in.  For example:
 
