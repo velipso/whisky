@@ -1,8 +1,6 @@
 whisky
 ======
 
-## Search in progress!
-
 Whisky is a collection of stateless random number generators.  These can be thought of as tiny hash
 functions, or pure noise functions.
 
@@ -13,7 +11,7 @@ I generated hundreds of thousands of potential functions in each category, and r
 
 This repo contains the single best function I could find in a given category.
 
-### Note: I am still searching but this repo will contain the best functions as I find them!
+### Note: I am still searching for great functions but this repo will contain the results as I find them!
 
 Categories
 ==========
