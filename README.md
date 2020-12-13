@@ -18,7 +18,7 @@ Categories
 
 Whisky functions are in the format of:
 
-```
+```c
 uint32_t whiskyQUALITYxDIMENSION(uint32_t ...);
 
 // examples:
@@ -52,7 +52,7 @@ accessed out of order.  They are not seeded like typical RNGs.
 
 If you prefer having state, you can easily add it back in.  For example:
 
-```
+```c
 uint32_t nextValue(){
   static uint32_t n = 0;
   return whisky3x1(n++);
@@ -62,7 +62,7 @@ uint32_t nextValue(){
 If you prefer having seeds, you can easily add that by increasing the dimension, and passing in the
 seed as one of the dimensions.  For example:
 
-```
+```c
 static uint32_t seed = 0, n = 0;
 uint32_t nextValue(){
   return whisky4x2(n++, seed);
@@ -80,14 +80,14 @@ Floating Point
 I've also provided two utility functions to create floating point values ranging from 0 (inclusive)
 to 1 (exclusive).
 
-```
+```c
 float whiskyf(uint32_t a);
 double whiskyd(uint32_t a, uint32_t b);
 ```
 
 These can be used like:
 
-```
+```c
 float n1 = whiskyf(whisky3x1(123));
 double n2 = whiskyd(whisky3x1(456), whisky3x1(789));
 ```
