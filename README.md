@@ -8,6 +8,7 @@ Feel free to copy/paste them directly into your projects.
 
 I generated hundreds of thousands of potential functions in each category, and ran them against the
 [dieharder 3.31.1](http://webhome.phy.duke.edu/~rgb/General/dieharder.php) statistical tests.
+[Screenshot](https://github.com/velipso/whisky/blob/main/screenshot.png).
 
 This repo contains the single best function I could find in a given category.
 
