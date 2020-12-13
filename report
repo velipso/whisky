@@ -1,0 +1,59 @@
+#!/bin/bash
+
+set -e
+
+if ! which dieharder > /dev/null; then
+	echo 'Missing dieharder' >&2
+	echo 'You must install the dieharder tool to continue' >&2
+	exit 1
+fi
+
+if ! which clang > /dev/null; then
+	echo 'Missing clang' >&2
+	echo 'You must install the clang tool to continue' >&2
+	exit 1
+fi
+
+if [ ! -e test.c ]; then
+	echo 'Missing test.c' >&2
+	echo 'This script should be ran inside the top-level directory in the whiksy repo' >&2
+	exit 1
+fi
+
+if [ $# -lt 1 ]; then
+	echo 'Usage:'
+	echo '  ./report <generator>'
+	echo ''
+	echo 'For a list of generators, run:'
+	echo '  ./whisky.out'
+	exit 1
+fi
+
+echo 'Generating whisky.out...'
+clang -O2 -o whisky.out test.c
+
+if ! ./whisky.out "$1"; then
+	echo 'Invalid generator' >&2
+	echo ''
+	echo 'For a list of generators, run:'
+	echo '  ./whisky.out'
+	exit 1
+fi
+
+DIM="${1#*x}";
+AXIS=1
+FILE=whisky"$1".txt
+while [ "$AXIS" -le "$DIM" ]; do
+	echo 'Generating report for' "$1" 'along axis' "$AXIS"'/'"$DIM"'...'
+	echo '######################################################################' >> "$FILE"
+	echo '#' >> "$FILE"
+	echo '# whisky'"$1"' axis '"$AXIS" >> "$FILE"
+	echo '#' >> "$FILE"
+	./whisky.out "$1" "$AXIS" | dieharder -g 200 -a | egrep --line-buffered 'PASSED|FAILED|WEAK' | tee -a "$FILE"
+	echo '#' >> "$FILE"
+	echo '######################################################################' >> "$FILE"
+	AXIS=$(( $AXIS + 1 ))
+	if [ "$AXIS" -le "$DIM" ]; then
+		echo '' >> "$FILE"
+	fi
+done
