@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+# Whisky - a collection of stateless RNGs
+# by Sean Connelly (@velipso), https://sean.cm
+# The Unlicense License
+# Project Home: https://github.com/velipso/whisky
+#
 
 set -e
 
@@ -20,6 +26,9 @@ if [ ! -e test.c ]; then
 	exit 1
 fi
 
+echo 'Generating whisky.out...'
+clang -O2 -o whisky.out test.c
+
 if [ $# -lt 1 ]; then
 	echo 'Usage:'
 	echo '  ./report <generator>'
@@ -29,9 +38,6 @@ if [ $# -lt 1 ]; then
 	exit 1
 fi
 
-echo 'Generating whisky.out...'
-clang -O2 -o whisky.out test.c
-
 if ! ./whisky.out "$1"; then
 	echo 'Invalid generator' >&2
 	echo ''
@@ -40,20 +46,21 @@ if ! ./whisky.out "$1"; then
 	exit 1
 fi
 
-DIM="${1#*x}";
+DIM=$(echo "$1" | sed 's/^\([0-9]*\).*/\1/g')
 AXIS=1
-FILE=whisky"$1".txt
+FILE='reports/whisky'"$1"'.txt'
+rm -f "$FILE"
 while [ "$AXIS" -le "$DIM" ]; do
-	echo 'Generating report for' "$1" 'along axis' "$AXIS"'/'"$DIM"'...'
-	echo '######################################################################' >> "$FILE"
-	echo '#' >> "$FILE"
-	echo '# whisky'"$1"' axis '"$AXIS" >> "$FILE"
-	echo '#' >> "$FILE"
-	./whisky.out "$1" "$AXIS" | dieharder -g 200 -a | egrep --line-buffered 'PASSED|FAILED|WEAK' | tee -a "$FILE"
-	echo '#' >> "$FILE"
-	echo '######################################################################' >> "$FILE"
-	AXIS=$(( $AXIS + 1 ))
-	if [ "$AXIS" -le "$DIM" ]; then
+	for DIRECTION in '+' '-'; do
+		echo 'Generating report for' "$1" 'along axis' "$AXIS"'/'"$DIM"', '"$DIRECTION"' direction...'
+		echo '###############################################################################' >> "$FILE"
+		echo '#' >> "$FILE"
+		echo '# whisky'"$1"', axis '"$AXIS"' of '"$DIM"', '"$DIRECTION"' direction' >> "$FILE"
+		echo '#' >> "$FILE"
+		echo '###############################################################################' >> "$FILE"
 		echo '' >> "$FILE"
-	fi
+		./whisky.out "$1" "$AXIS" "$DIRECTION" | dieharder -g 200 -a | tee -a "$FILE"
+		echo '' >> "$FILE"
+	done
+	AXIS=$(( $AXIS + 1 ))
 done
