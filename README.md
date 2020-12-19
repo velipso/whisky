@@ -8,7 +8,8 @@ Feel free to copy/paste them directly into your projects.
 
 I'm in the process of generating tens of thousands of functions, and analyzing them to find the best
 ones using the [dieharder 3.31.1](http://webhome.phy.duke.edu/~rgb/General/dieharder.php)
-statistical tests.
+statistical tests
+([screenshot](https://raw.githubusercontent.com/velipso/whisky/main/screenshot.png)).
 
 This repo will eventually contain the best functions I've found.
 
