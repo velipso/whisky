@@ -17,6 +17,7 @@
 #include <string.h>
 
 typedef uint32_t (*dim1_f)(uint32_t x0);
+typedef uint32_t (*dim2_f)(uint32_t x0, uint32_t x1);
 static struct {
 	const char *sig;
 	int dim;
@@ -42,7 +43,7 @@ static int usage(int ret){
 		"  <axis>        The axis to march along, ex, 1, 2, etc\n"
 		"  <dir>         The direction to march on the axis, '+' or '-'\n\n"
 		"Example:\n"
-		"  whisky.out 1alt 0 +\n\n"
+		"  whisky.out 1alt 1 +\n\n"
 		"Available generators:\n"
 	);
 	int i = 0;
@@ -75,6 +76,20 @@ static int stream1(int axis, int dir, dim1_f f){
 	while (1){
 		for (int i = 0; i < BUF; i++, n += dir)
 			v[i] = f(n);
+		fwrite(v, sizeof(uint32_t), BUF, stdout);
+	}
+	return 0;
+}
+
+static int stream2(int axis, int dir, dim2_f f){
+	if (axis < 1 || axis > 2)
+		return usageaxis(axis, 2);
+	uint32_t v[BUF];
+	uint32_t n[2] = {0};
+	axis--;
+	while (1){
+		for (int i = 0; i < BUF; i++, n[axis] += dir)
+			v[i] = f(n[0], n[1]);
 		fwrite(v, sizeof(uint32_t), BUF, stdout);
 	}
 	return 0;

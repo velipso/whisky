@@ -158,5 +158,5 @@ parameters passed in.  This is a crucial property for games with procedural cont
 Search Space
 ============
 
-* `whisky1` / `whisky1alt` - searched 3000 functions
+* `whisky1` / `whisky1alt` - searched 6000 functions
 * `whisky1_fast` / `whisky1alt_fast` - searched 6000 functions

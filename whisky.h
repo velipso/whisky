@@ -19,16 +19,16 @@
 // Alternate functions (whiskyXalt) are just as good as their counterparts,
 // just different... enjoy the variety!
 //
-static uint32_t whisky1(uint32_t x0){ // e 441
-  uint32_t z0 = (x0 >> 4) ^ (x0 * 1067874637);
-  uint32_t z1 = (z0 >> 6) ^ (z0 * 1855142719);
-  return (z1 >> 19) ^ (z1 * 216744991);
-}
-
-static uint32_t whisky1alt(uint32_t x0){ // c 461
+static uint32_t whisky1(uint32_t x0){ // c 461
   uint32_t z0 = (x0 >> 6) ^ (x0 * 180263917);
   uint32_t z1 = (z0 >> 8) ^ (z0 * 443342311);
   return (z1 >> 24) ^ (z1 * 254956981);
+}
+
+static uint32_t whisky1alt(uint32_t x0){ // e 441
+  uint32_t z0 = (x0 >> 4) ^ (x0 * 1067874637);
+  uint32_t z1 = (z0 >> 6) ^ (z0 * 1855142719);
+  return (z1 >> 19) ^ (z1 * 216744991);
 }
 
 //////////////////////////////////////////////////////////////////////////////
