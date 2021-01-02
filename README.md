@@ -15,8 +15,18 @@ This repo will eventually contain the best functions I've found.
 
 ### NOTE: I am still actively searching!
 
-The functions provided are my best so far, but are subject to change!  Come back in 6 months and it
-will probably be finalized :-).
+I don't have any hash functions to publish yet, but I've finished my RNG generator and search
+algorithms (`whisky.js`).  Please check back in a couple months as it runs on my Mac mini!
+
+Progress:
+
+| Dimension | X | Xalt | X_fast | Xalt_fast |
+| --------- | - | ---- | ------ | --------- |
+| `whisky1` | ⏳ | ⏳ | ⏳ | ⏳ |
+| `whisky2` | ⏳ | ⏳ | ⏳ | ⏳ |
+| `whisky3` | ⏳ | ⏳ | ⏳ | ⏳ |
+| `whisky4` | ⏳ | ⏳ | ⏳ | ⏳ |
+| `whisky5` | ⏳ | ⏳ | ⏳ | ⏳ |
 
 API
 ===
@@ -24,20 +34,20 @@ API
 The functions are named in the format of:
 
 ```c
-uint32_t whisky<D>[alt][_fast](...);
-float whisky<D>f[_fast](...);
-double whisky<D>d[_fast](...);
+uint32_t whiskyX[alt][_fast](...);
+float whiskyXf[_fast](...);
+double whiskyXd[_fast](...);
 ```
 
-* `<D>` - the number of inputs (dimensions)
+* `X` - the number of inputs (dimensions), from `1` to `5`
 * `[alt]` - (optional) alternate hash function of equal quality
 * `[_fast]` - (optional) faster hash function of lower quality
 
-For example, `whisky1` is a recommended hash function with one argument.  The `whisky1alt` function
-is also recommended and of equal quality compared to `whisky1`.
+For example, `whisky2` is a recommended hash function with two arguments.  The `whisky2alt` function
+is also recommended and of equal quality compared to `whisky2`.
 
-The `whisky1_fast` function also takes one argument, but is lower quality.  And `whisky1alt_fast` is
-an alternate that is also lower quality.
+The `whisky2_fast` function also takes two arguments, but is lower quality.  And `whisky2alt_fast`
+is an alternate that is also lower quality.
 
 All the functions are in the single header file `whisky.h` and declared `static`.  This allows the
 compiler to inline functions where possible.
@@ -65,6 +75,24 @@ double randomValue = whisky1d(123);
 
 These will return the same value for the same input, but the `double` has more precision.
 
+SHA-256
+=======
+
+The plain `whiskyX` hashes are not cryptographically secure, so just for fun, I've also provided a
+single chunk implementation of [SHA-256](https://en.wikipedia.org/wiki/SHA-2) -- which is complete
+overkill for games, but it's small (about 50 lines) and easy to include.
+
+```c
+void whisky_sha256(const uint32_t input[8], uint32_t output[8]);
+```
+
+This is not a full implementation -- it cannot take an arbitrary length input.  It is specifically
+limited to perform a hash on 32 bytes of input, and outputs the 32 byte hash.  You can hash an
+array in-place by setting input and output to the same array.
+
+It's obviously much slower than the `whiskyX` functions, but it's still quite fast!  And of course
+the quality is ridiculously good.
+
 Stateless RNG
 =============
 
@@ -87,14 +115,12 @@ Notice that `seed` and `i` are global variables, and no arguments are passed int
 Compare that to `whisky1`, provided in this repo:
 
 ```c
-uint32_t whisky1(uint32_t x0){ // c 461
-  uint32_t z0 = (x0 >> 6) ^ (x0 * 180263917);
-  uint32_t z1 = (z0 >> 8) ^ (z0 * 443342311);
-  return (z1 >> 24) ^ (z1 * 254956981);
+uint32_t whisky1(uint32_t i0){
+  TODO
 }
 ```
 
-There are no global variables -- instead, `x0` is passed in and hashed.
+There are no global variables -- instead, `i0` is passed in and hashed.
 
 Why does it matter?
 
@@ -128,8 +154,8 @@ Likewise, `smush` can be thought of as a 1-dimensional array -- but that's it.  
 2d or 3d array?  You can change the seed, but that isn't adding a dimension, that's just skipping
 ahead in the 1d array.
 
-The whisky collection will provide multi-dimensional hashes, so you will have `whisky2(x, y)`,
-`whisky3(x, y, z)`, and `whisky4(x, y, z, w)`.
+The whisky collection provides multi-dimensional hashes, so you have `whisky2(x, y)`,
+`whisky3(x, y, z)`, `whisky4(x, y, z, w)`, and `whisky5(x, y, z, w, v)`.
 
 This also makes it easy to seed -- for example, if you want a seeded 2d array, use `whisky3` and
 pass the seed as a parameter `whisky3(x, y, seed)`.
@@ -156,8 +182,145 @@ of a town on a map.  Tweaking the flower generation will relocate villages!  Tha
 With whisky, you can break these dependencies because the random numbers are only based on the
 parameters passed in.  This is a crucial property for games with procedural content.
 
-Search Space
-============
+Search Script
+=============
 
-* `whisky1` / `whisky1alt` - searched 6000 functions
-* `whisky1_fast` / `whisky1alt_fast` - searched 6000 functions
+If you would like to reproduce my results, you can perform the same exact searches using the
+`whisky.js` script and [node.js](https://nodejs.org).
+
+Here's an example search:
+
+```
+node whisky.js step 100 a 2 12
+```
+
+This will (eventually) find the best function out of 100, for 2 dimensions, with 12 operators.  It
+will perform a single step, and save the results to a file.  It will exit with an error if there
+aren't any more steps to perform.
+
+The `a` is simply a unique identifier so you can have multiple terminals open.  For example, I have
+a six-core CPU, so I use six terminals, labeled `a`-`f`.
+
+In order to keep searching, just put it in a loop in your shell:
+
+```
+while node whisky.js step 100 a 2 12; do :; done
+```
+
+You can kill it at any time, and it will resume where it left off.  If you want to start over, just
+delete the state file associated with it (`state.a.2.12.json`).
+
+To find the best function, use the `score` subcommand:
+
+```
+node whisky.js score 2 12
+```
+
+This will search across all the state files, and rank the functions.  Note that lower score is
+better!
+
+Once you know the best functions, you can print them with the `print` subcommand:
+
+```
+node whisky.js print a 2 12 56
+```
+
+The strategy I used for finding the whisky functions was to start small and only search across 10
+functions.  Once that process finished, I increased the total to 50, 100, etc, until I was satisfied
+with the results.
+
+RNG Generator
+=============
+
+The code used to generate random hash functions is included in `whisky.js`, called `generateRNG()`.
+
+The basic idea is to pick a random template for the next line of code, and keep adding lines until
+the budget (quality) is used up:
+
+```javascript
+// possible templates for each line, where:
+//   x0,x1  input variables
+//   P      random large prime
+//   S,T    random shift amount, where S+T = 32
+const templates = [{
+  cost: 2,
+  line: '(x0 * P) ^ x1'
+}, {
+  cost: 3,
+  lossy: true, // flag x1 as lossy, since bits are thrown away
+  line: '(x0 * P) ^ (x1 >> S)'
+}, {
+  cost: 4,
+  line: '(x0 * P) ^ (x1 >> S) ^ x1'
+}, {
+  cost: 5,
+  line: '(x0 * P) ^ (x1 >> S) ^ (x1 << T)'
+}];
+```
+
+If the quality is set to 12, it might achieve that by doing 5+2+3+2, for example.  The cost is just
+a count of the number of operators in the line of code.
+
+Notice that one template is marked as `lossy`.  This is because some of `x1`'s bits will be lost
+due to the right shift.
+
+It's important to track `lossy` so that `x1` is only replaced with a variable that has also been
+used elsewhere.  That increases the likelihood that the hash will pass more tests, since all bits
+are guaranteed to be used somewhere in the calculation.
+
+Another important trick is here:
+
+```javascript
+// get a random element in a list, but favor the tail
+const rndGetTail = a => {
+  for (let i = a.length - 1; i >= 1; i--)
+    if (rnd(0, 1)) return a[i];
+  return a[0];
+};
+```
+
+While constructing the hash function, all variables are added to a list, so that when `x0` and `x1`
+are replaced, they can pull from any variable in scope.
+
+However, notice that `rndGetTail` will heavily favor the tail of the list.  This is because the
+tail will contain later variables, which have been mixed more.
+
+Lastly, notice that the templates favor _right_ shift over _left_ shift.  You might think they're
+equally useful, since they just move bits around, so who cares what direction they go in?
+
+My testing indicates that's wrong though.  I suspect it's due to the nature of multiplication.  When
+multiplying a value with lots of zeroes in the lower bits, those bits _stay_ zero.  The same isn't
+true of zeros in the higher bits -- those get clobbered by the carry.  So right shift is better.
+
+Fun Rant
+========
+
+If you'll indulge me, I'd like to rant a little bit about how much fun this project was :-).
+
+What's the point?  You can make a good-enough hash function in a couple hours, so why bother with
+all of this?
+
+Simple: it's fun!
+
+There are two main problems:
+
+1. How to generate good RNG functions
+2. How to navigate the search space wisely
+
+Both of them are really challenging and interesting, and feed into each other.
+
+I started by creating a completely haphazard RNG generator that just spit out random lines of code,
+with random operators.  It was terrible!
+
+Slowly, I made small optimizations, and tested along the way.
+
+While it is frustrating to have to run tests for a day before making a decision on whether an idea
+is any good, that's also what makes it entertaining.  It's so costly to try an idea, it forces you
+to tread carefully.
+
+Creating the algorithm for testing was also fun too.  At first I would just generate a random
+function and run all tests against it.  Eventually I settled on a breadth-first search that ran the
+fastest tests firsts, so I could reject bad functions as quickly as possible.
+
+I understand that this was all unnecessary in the grand scheme of things, but who cares?  I did it
+in my free time and had a blast :-).

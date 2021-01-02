@@ -1,3 +1,5 @@
+email.js
+state.*.json
 *.out
 
 # random crap that tends to appear over time

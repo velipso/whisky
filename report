@@ -30,6 +30,8 @@ echo 'Generating whisky.out...'
 clang -O2 -o whisky.out test.c
 
 if [ $# -lt 1 ]; then
+	echo 'Creates a report for a given generator, and puts it in the reports/ directory'
+	echo ''
 	echo 'Usage:'
 	echo '  ./report <generator>'
 	echo ''
@@ -46,16 +48,22 @@ if ! ./whisky.out "$1"; then
 	exit 1
 fi
 
-DIM=$(echo "$1" | sed 's/^\([0-9]*\).*/\1/g')
+if [ "$1" = "sha256" ]; then
+	NAME=whisky_sha256
+	DIM=8
+else
+	NAME="whisky$1"
+	DIM=$(echo "$1" | sed 's/^\([0-9]*\).*/\1/g')
+fi
 AXIS=1
-FILE='reports/whisky'"$1"'.txt'
+FILE='reports/'"$NAME"'.txt'
 rm -f "$FILE"
 while [ "$AXIS" -le "$DIM" ]; do
 	for DIRECTION in '+' '-'; do
-		echo 'Generating report for' "$1" 'along axis' "$AXIS"'/'"$DIM"', '"$DIRECTION"' direction...'
+		echo 'Generating report for' "$NAME" 'along axis' "$AXIS"'/'"$DIM"', '"$DIRECTION"' direction...'
 		echo '###############################################################################' >> "$FILE"
 		echo '#' >> "$FILE"
-		echo '# whisky'"$1"', axis '"$AXIS"' of '"$DIM"', '"$DIRECTION"' direction' >> "$FILE"
+		echo '# '"$NAME"', axis '"$AXIS"' of '"$DIM"', '"$DIRECTION"' direction' >> "$FILE"
 		echo '#' >> "$FILE"
 		echo '###############################################################################' >> "$FILE"
 		echo '' >> "$FILE"
