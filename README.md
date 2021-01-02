@@ -21,7 +21,7 @@ algorithms (`whisky.js`).  Please check back in a couple months as it runs on my
 Progress:
 
 | Dimension | X | Xalt | X_fast | Xalt_fast |
-| --------- | - | ---- | ------ | --------- |
+| --------- | :-: | :-: | :-: | :-: |
 | `whisky1` | ⏳ | ⏳ | ⏳ | ⏳ |
 | `whisky2` | ⏳ | ⏳ | ⏳ | ⏳ |
 | `whisky3` | ⏳ | ⏳ | ⏳ | ⏳ |
