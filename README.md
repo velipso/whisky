@@ -15,18 +15,15 @@ This repo will eventually contain the best functions I've found.
 
 ### NOTE: I am still actively searching!
 
-I don't have any hash functions to publish yet, but I've finished my RNG generator and search
-algorithms (`whisky.js`).  Please check back in a couple months as it runs on my Mac mini!
+Progress: 20%
 
-Progress:
-
-| Dimension | X | Xalt | X_fast | Xalt_fast |
-| --------- | :-: | :-: | :-: | :-: |
-| `whisky1` | ⏳ | ⏳ | ⏳ | ⏳ |
-| `whisky2` | ⏳ | ⏳ | ⏳ | ⏳ |
-| `whisky3` | ⏳ | ⏳ | ⏳ | ⏳ |
-| `whisky4` | ⏳ | ⏳ | ⏳ | ⏳ |
-| `whisky5` | ⏳ | ⏳ | ⏳ | ⏳ |
+| Dimension | Status |
+|:---------:|:------:|
+|     1     |   ⏳   |
+|     2     |   ✅   |
+|     3     |   ⏳   |
+|     4     |   ⏳   |
+|     5     |   ⏳   |
 
 API
 ===
@@ -34,23 +31,43 @@ API
 The functions are named in the format of:
 
 ```c
-uint32_t whiskyX[alt][_fast](...);
-float whiskyXf[_fast](...);
-double whiskyXd[_fast](...);
+uint32_t whiskyX[alt](...);
+float whiskyXf(...);
+double whiskyXd(...);
 ```
 
 * `X` - the number of inputs (dimensions), from `1` to `5`
 * `[alt]` - (optional) alternate hash function of equal quality
-* `[_fast]` - (optional) faster hash function of lower quality
 
-For example, `whisky2` is a recommended hash function with two arguments.  The `whisky2alt` function
-is also recommended and of equal quality compared to `whisky2`.
+For example, `whisky2` is a hash function with two arguments, and the `whisky2alt` function is of
+equal quality compared to `whisky2`.
 
-The `whisky2_fast` function also takes two arguments, but is lower quality.  And `whisky2alt_fast`
-is an alternate that is also lower quality.
+Having an alternate is useful if you need a 64-bit result -- you can get 32-bits from `whisky2` and
+another 32-bits from `whisky2alt` using the same input.
 
 All the functions are in the single header file `whisky.h` and declared `static`.  This allows the
 compiler to inline functions where possible.
+
+If you need higher dimensions, you can chain hashes.  For example, if you need 10-dimensions, you
+could do something like `whisky2(whisky5(...), whisky5alt(...))`.
+
+SHA-256
+=======
+
+The plain `whiskyX` hashes are not cryptographically secure, so just for fun, I've also provided a
+single chunk implementation of [SHA-256](https://en.wikipedia.org/wiki/SHA-2) -- which is complete
+overkill for games, but it's small (about 50 lines) and easy to include.
+
+```c
+void whisky_sha256(const uint32_t input[8], uint32_t output[8]);
+```
+
+This is not a full implementation -- it cannot take an arbitrary length input.  It is specifically
+limited to perform a hash on 32 bytes of input, and outputs the 32 byte hash.  You can hash an
+array in-place by setting input and output to the same array.
+
+It's obviously much slower than the `whiskyX` functions, but it's still quite fast!  And of course
+the quality is ridiculously good.
 
 Floating Point
 ==============
@@ -75,23 +92,19 @@ double randomValue = whisky1d(123);
 
 These will return the same value for the same input, but the `double` has more precision.
 
-SHA-256
-=======
+Final Reports
+=============
 
-The plain `whiskyX` hashes are not cryptographically secure, so just for fun, I've also provided a
-single chunk implementation of [SHA-256](https://en.wikipedia.org/wiki/SHA-2) -- which is complete
-overkill for games, but it's small (about 50 lines) and easy to include.
+The final hash functions have been tested with dieharder, for each axis, in both positive and
+negative directions.  You can see the results in the `reports/` directory.
 
-```c
-void whisky_sha256(const uint32_t input[8], uint32_t output[8]);
-```
+Note that some individual tests are reported as weak.  This is okay!  If you look at SHA-256, it
+even has a failed test!
 
-This is not a full implementation -- it cannot take an arbitrary length input.  It is specifically
-limited to perform a hash on 32 bytes of input, and outputs the 32 byte hash.  You can hash an
-array in-place by setting input and output to the same array.
+It's important to understand that weak simply means the probability of the result (P-value) is less
+than 1%.  Since hundreds of tests are performed, it is _expected_ to receive a few weak results.
 
-It's obviously much slower than the `whiskyX` functions, but it's still quite fast!  And of course
-the quality is ridiculously good.
+In the case of the failed SHA-256 test, I would trust SHA-256 over dieharder :-P.
 
 Stateless RNG
 =============
@@ -222,12 +235,22 @@ better!
 Once you know the best functions, you can print them with the `print` subcommand:
 
 ```
-node whisky.js print a 2 12 56
+node whisky.js print b 2 12 379
 ```
 
 The strategy I used for finding the whisky functions was to start small and only search across 10
 functions.  Once that process finished, I increased the total to 50, 100, etc, until I was satisfied
 with the results.
+
+### Summary of Results
+
+| Dimension | Functions searched | Tests performed | Primary ID   | Alternate ID |
+|:---------:|-------------------:|----------------:|--------------|--------------|
+|     1     |                TBD |                 |              |              |
+|     2     |             19,000 |         315,331 | `b 2 12 379` | `b 2 12 536` |
+|     3     |                TBD |                 |              |              |
+|     4     |                TBD |                 |              |              |
+|     5     |                TBD |                 |              |              |
 
 RNG Generator
 =============

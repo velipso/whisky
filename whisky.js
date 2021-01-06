@@ -60,7 +60,8 @@ Subcommands:
   print   Print a function's source code to console
   score   Rank functions given the current state on disk
 ${subcommand && subcommand !== 'step' ? '' : `
-* step <total> <process> <dimensions> <quality> [-f] [-w]
+* step <total> <process> <dimensions> <quality>
+       [-f|-w]
 
   Calculates the next step needed to analyze the space of functions,
   and executes dieharder to gather the information.  Exits with 1 if
@@ -90,7 +91,8 @@ ${subcommand && subcommand !== 'step' ? '' : `
     <quality>     How many operations allowed in the hash
     <index>       Unique identifier for an individual function
 `}${subcommand && subcommand !== 'score' ? '' : `
-* score [<process>] <dimensions> <quality> [<index>] [-i] [-s] [-n] [-c]
+* score [<process>] <dimensions> <quality> [<index>]
+        [-i|-f] [-s] [-n] [-c]
 
   Given the current knowledge, calculates the min/max score of the
   selected functions.
@@ -110,6 +112,7 @@ ${subcommand && subcommand !== 'step' ? '' : `
     <quality>     How many operations allowed in the hash
     <index>       Unique identifier for an individual function
     -i            Sort by min score instead of max score
+    -f            Sort by failure rate instead of max score
     -s            Only show summary table
     -n            Normalize scores between 0-1000
     -c            Show code along with rankings
@@ -120,6 +123,7 @@ ${subcommand && subcommand !== 'step' ? '' : `
 async function stepMain(args){
   const allowFailures = !argFlag(args, '-f');
   const allowWeaks = !argFlag(args, '-w');
+  const skipEmail = argFlag(args, '-e');
 
   if (args.length !== 4)
     return usage(1, 'step');
@@ -132,20 +136,21 @@ async function stepMain(args){
   if (isNaN(total) || isNaN(dim) || isNaN(quality))
     return usage(1, 'step');
 
-  // if lots of tests qualify for the last test, only take the top 5%
-  const maxFinished = Math.max(2, Math.min(6, Math.floor(total * 0.05)));
+  // if lots of rngs qualify for the last test, trim the possibility space
+  const maxFinished = total <= 10 ? 2 : total <= 50 ? 4 : total <= 100 ? 6 : 8;
 
   const startTime = Date.now();
   const exit = x => {
-    let hrs = Date.now() - startTime;
-    const ms = hrs % 1000; hrs = Math.floor(hrs / 1000);
+    let hrs = Math.round((Date.now() - startTime) / 100);
+    const ds = hrs % 10; hrs = Math.floor(hrs / 10);
     const sec = hrs % 60; hrs = Math.floor(hrs / 60);
     const min = hrs % 60; hrs = Math.floor(hrs / 60);
-    console.log(
+    console.log((
       (hrs > 0 ? `${hrs}hr ` : '') +
       (min > 0 ? `${min}min ` : '') +
-      `${sec}.${`000${ms}`.substr(-3).substr(0, 1)}sec`
-    );
+      `${sec}.${ds}sec` +
+      (min > 5 ? ` at ${(new Date()).toLocaleString()}` : '')
+    ).cyan);
     process.exit(x);
   };
 
@@ -160,8 +165,8 @@ async function stepMain(args){
     .map((a, i) => scoreGen(proc, dim, quality, a, i))
     .filter(a => state.ignore[a.i] === undefined)
     .filter(a => !(
-      (!allowFailures && a.minScore >= 700) ||
-      (!allowWeaks && a.minScore >= 100)
+      (!allowFailures && a.fail) ||
+      (!allowWeaks && a.weak)
     ))
     .sort(sortBy('maxScore', 'i'));
 
@@ -190,7 +195,11 @@ async function stepMain(args){
 
   // any next test required?
   if (!nx){
-    const report = [`Results for ${proc} ${dim} ${quality}`, '(lower score is better)', ''];
+    const report = [
+      `Results for ${proc} ${dim} ${quality}, total ${total}`,
+      '(lower score is better)',
+      ''
+    ];
     const finished = scores.filter(sc => sc.nextTest === false);
     finished.forEach(sc => {
       report.push(`${sc.id} score: ${sc.minScore.toFixed(2)}`);
@@ -211,7 +220,7 @@ async function stepMain(args){
     // email me the results -- email.js isn't checked into the repo and contains special commands
     // to email me, the author :-)
     // since you don't have the file, the require() throws and nothing happens
-    try { require('./email')(report); } catch (e) {}
+    try { if (!skipEmail) require('./email')(report); } catch (e) {}
     exit(1);
     return;
   }
@@ -371,7 +380,7 @@ function printMain(args){
 }
 
 function scoreMain(args){
-  const sortKey = argFlag(args, '-i') ? 'minScore' : 'maxScore';
+  const sortKey = argFlag(args, '-f') ? 'percFail' : argFlag(args, '-i') ? 'minScore' : 'maxScore';
   const summaryOnly = argFlag(args, '-s');
   const normalize = argFlag(args, '-n');
   const showCode = argFlag(args, '-c');
@@ -458,10 +467,11 @@ function scoreMain(args){
           let nFail = 0;
           for (const k of keys)
             nFail += judge(a[k]) === 'FAIL' ? 1 : 0;
-          sc.percFail = keys.length > 0 ? nFail * 100 / keys.length : false;
+          sc.numTests = keys.length;
+          sc.percFail = keys.length > 0 ? nFail * 100 / keys.length : 999;
           return sc;
         })
-        .sort(sortBy(sortKey, 'i'));
+        .sort(sortBy(sortKey, '^numTests', 'i'));
 
       if (normalize){
         const maxScoreAll = calcScore({}, dim, [], 0);
@@ -478,7 +488,7 @@ function scoreMain(args){
         (sc.minScore.toFixed(2) === sc.maxScore.toFixed(2)
           ? ''
           : ` <-> ` + lpad(lpScore, sc.maxScore.toFixed(2)).green) +
-        (sc.percFail ? lpad(8, `${sc.percFail.toFixed(1)}%`).brRed : '');
+        (sc.percFail !== false ? lpad(8, `${sc.percFail.toFixed(1)}%`).brRed : '');
       scores.forEach(genStr);
 
       if (index){
@@ -532,7 +542,7 @@ function scoreMain(args){
     });
 
   if (!proc){
-    combined.sort(sortBy(sortKey, 'i'));
+    combined.sort(sortBy(sortKey, '^numTests', 'i'));
     logTable(combined, `Summary - ${`${combinedTotalTests}`.brBlue} tests`);
   }
 }
@@ -633,7 +643,14 @@ function scoreGen(proc, dim, quality, a, i){
   }
   if (nextTest === testInfo.length)
     nextTest = false;
-  return {proc, dim, quality, i, id, idColor, minScore, maxScore, nextTest, nextAxis};
+  let fail = false, weak = false;
+  keys.forEach(k => {
+    switch (judge(a[k])){
+      case 'FAIL': fail = weak = true; break;
+      case 'WEAK': weak = true; break;
+    }
+  });
+  return {proc, dim, quality, i, id, idColor, minScore, maxScore, nextTest, nextAxis, fail, weak};
 }
 
 function generateC(dim, code){

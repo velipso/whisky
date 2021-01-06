@@ -10,14 +10,10 @@
 
 #include <stdint.h>
 
-//////////////////////////////////////////////////////////////////////////////
 //
-// RECOMMENDED HASHES
+// HASH FUNCTIONS
 //
-// These pass the dieharder statistical tests
-//
-// Alternate functions (whiskyXalt) are just as good as their counterparts,
-// just different... enjoy the variety!
+// Note: both the primary and alternate pass all dieharder tests and are of equal quality
 //
 
 static uint32_t whisky1(uint32_t i0){
@@ -29,11 +25,20 @@ static uint32_t whisky1alt(uint32_t i0){
 }
 
 static uint32_t whisky2(uint32_t i0, uint32_t i1){
-	return i0 + i1; // TODO: this!
+	uint32_t z0 = (i1 * 1833778363) ^ i0;
+	uint32_t z1 = (z0 *  337170863) ^ (z0 >> 13) ^ z0;
+	uint32_t z2 = (z1 *  620363059) ^ (z1 >> 10);
+	uint32_t z3 = (z2 *  232140641) ^ (z2 >> 21);
+	return z3;
 }
 
 static uint32_t whisky2alt(uint32_t i0, uint32_t i1){
-	return i0 + i1; // TODO: this!
+	uint32_t z0 = (i0 *  477119449) ^ i1;
+	uint32_t z1 = (z0 *  923076359) ^ z0;
+	uint32_t z2 = (z1 * 2089390813) ^ (z0 >> 13);
+	uint32_t z3 = (z2 *  811285039) ^ i1;
+	uint32_t z4 = (z3 *  210814523) ^ (z3 >> 19);
+	return z4;
 }
 
 static uint32_t whisky3(uint32_t i0, uint32_t i1, uint32_t i2){
@@ -113,59 +118,8 @@ static void whisky_sha256(const uint32_t input[8], uint32_t output[8]){
 	output[6] = 0x1f83d9ab + g; output[7] = 0x5be0cd19 + h;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// FASTER HASHES OF LOWER QUALITY
-//
-// These fail some statistical tests, which you might not care about, but are
-// best in their category (as far as I could find)
-//
-
-static uint32_t whisky1_fast(uint32_t i0){
-	return i0; // TODO: this!
-}
-
-static uint32_t whisky1alt_fast(uint32_t i0){
-	return i0; // TODO: this!
-}
-
-static uint32_t whisky2_fast(uint32_t i0, uint32_t i1){
-	return i0 + i1; // TODO: this!
-}
-
-static uint32_t whisky2alt_fast(uint32_t i0, uint32_t i1){
-	return i0 + i1; // TODO: this!
-}
-
-static uint32_t whisky3_fast(uint32_t i0, uint32_t i1, uint32_t i2){
-	return i0 + i1 + i2; // TODO: this!
-}
-
-static uint32_t whisky3alt_fast(uint32_t i0, uint32_t i1, uint32_t i2){
-	return i0 + i1 + i2; // TODO: this!
-}
-
-static uint32_t whisky4_fast(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3){
-	return i0 + i1 + i2 + i3; // TODO: this!
-}
-
-static uint32_t whisky4alt_fast(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3){
-	return i0 + i1 + i2 + i3; // TODO: this!
-}
-
-static uint32_t whisky5_fast(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4){
-	return i0 + i1 + i2 + i3 + i4; // TODO: this!
-}
-
-static uint32_t whisky5alt_fast(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4){
-	return i0 + i1 + i2 + i3 + i4; // TODO: this!
-}
-
-//////////////////////////////////////////////////////////////////////////////
 //
 // UTILITY FUNCTIONS
-//
-// Functions for constructing floating point numbers
 //
 
 // generates floats ranging [0, 1) using 23 bits of randomness passed in
@@ -189,23 +143,11 @@ static float whisky1f(uint32_t i0){
 static double whisky1d(uint32_t i0){
 	return whiskyd(whisky1(i0), whisky1alt(i0));
 }
-static float whisky1f_fast(uint32_t i0){
-	return whiskyf(whisky1_fast(i0));
-}
-static double whisky1d_fast(uint32_t i0){
-	return whiskyd(whisky1_fast(i0), whisky1alt_fast(i0));
-}
 static float whisky2f(uint32_t i0, uint32_t i1){
 	return whiskyf(whisky2(i0, i1));
 }
 static double whisky2d(uint32_t i0, uint32_t i1){
 	return whiskyd(whisky2(i0, i1), whisky2alt(i0, i1));
-}
-static float whisky2f_fast(uint32_t i0, uint32_t i1){
-	return whiskyf(whisky2_fast(i0, i1));
-}
-static double whisky2d_fast(uint32_t i0, uint32_t i1){
-	return whiskyd(whisky2_fast(i0, i1), whisky2alt_fast(i0, i1));
 }
 static float whisky3f(uint32_t i0, uint32_t i1, uint32_t i2){
 	return whiskyf(whisky3(i0, i1, i2));
@@ -213,35 +155,17 @@ static float whisky3f(uint32_t i0, uint32_t i1, uint32_t i2){
 static double whisky3d(uint32_t i0, uint32_t i1, uint32_t i2){
 	return whiskyd(whisky3(i0, i1, i2), whisky3alt(i0, i1, i2));
 }
-static float whisky3f_fast(uint32_t i0, uint32_t i1, uint32_t i2){
-	return whiskyf(whisky3_fast(i0, i1, i2));
-}
-static double whisky3d_fast(uint32_t i0, uint32_t i1, uint32_t i2){
-	return whiskyd(whisky3_fast(i0, i1, i2), whisky3alt_fast(i0, i1, i2));
-}
 static float whisky4f(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3){
 	return whiskyf(whisky4(i0, i1, i2, i3));
 }
 static double whisky4d(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3){
 	return whiskyd(whisky4(i0, i1, i2, i3), whisky4alt(i0, i1, i2, i3));
 }
-static float whisky4f_fast(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3){
-	return whiskyf(whisky4_fast(i0, i1, i2, i3));
-}
-static double whisky4d_fast(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3){
-	return whiskyd(whisky4_fast(i0, i1, i2, i3), whisky4alt_fast(i0, i1, i2, i3));
-}
 static float whisky5f(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4){
 	return whiskyf(whisky5(i0, i1, i2, i3, i4));
 }
 static double whisky5d(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4){
 	return whiskyd(whisky5(i0, i1, i2, i3, i4), whisky5alt(i0, i1, i2, i3, i4));
-}
-static float whisky5f_fast(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4){
-	return whiskyf(whisky5_fast(i0, i1, i2, i3, i4));
-}
-static double whisky5d_fast(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4){
-	return whiskyd(whisky5_fast(i0, i1, i2, i3, i4), whisky5alt_fast(i0, i1, i2, i3, i4));
 }
 
 #endif

@@ -33,27 +33,17 @@ static struct {
 		dim5_f f5;
 	} u;
 } streams[] = {
-	{ .sig = "1"        , .dim = 1, .u.f1 = whisky1         },
-	{ .sig = "1alt"     , .dim = 1, .u.f1 = whisky1alt      },
-	{ .sig = "1_fast"   , .dim = 1, .u.f1 = whisky1_fast    },
-	{ .sig = "1alt_fast", .dim = 1, .u.f1 = whisky1alt_fast },
-	{ .sig = "2"        , .dim = 2, .u.f2 = whisky2         },
-	{ .sig = "2alt"     , .dim = 2, .u.f2 = whisky2alt      },
-	{ .sig = "2_fast"   , .dim = 2, .u.f2 = whisky2_fast    },
-	{ .sig = "2alt_fast", .dim = 2, .u.f2 = whisky2alt_fast },
-	{ .sig = "3"        , .dim = 3, .u.f3 = whisky3         },
-	{ .sig = "3alt"     , .dim = 3, .u.f3 = whisky3alt      },
-	{ .sig = "3_fast"   , .dim = 3, .u.f3 = whisky3_fast    },
-	{ .sig = "3alt_fast", .dim = 3, .u.f3 = whisky3alt_fast },
-	{ .sig = "4"        , .dim = 4, .u.f4 = whisky4         },
-	{ .sig = "4alt"     , .dim = 4, .u.f4 = whisky4alt      },
-	{ .sig = "4_fast"   , .dim = 4, .u.f4 = whisky4_fast    },
-	{ .sig = "4alt_fast", .dim = 4, .u.f4 = whisky4alt_fast },
-	{ .sig = "5"        , .dim = 5, .u.f5 = whisky5         },
-	{ .sig = "5alt"     , .dim = 5, .u.f5 = whisky5alt      },
-	{ .sig = "5_fast"   , .dim = 5, .u.f5 = whisky5_fast    },
-	{ .sig = "5alt_fast", .dim = 5, .u.f5 = whisky5alt_fast },
-	{ .sig = "sha256"   , .dim = 8 },
+	{ .sig = "1"     , .dim = 1, .u.f1 = whisky1         },
+	{ .sig = "1alt"  , .dim = 1, .u.f1 = whisky1alt      },
+	{ .sig = "2"     , .dim = 2, .u.f2 = whisky2         },
+	{ .sig = "2alt"  , .dim = 2, .u.f2 = whisky2alt      },
+	{ .sig = "3"     , .dim = 3, .u.f3 = whisky3         },
+	{ .sig = "3alt"  , .dim = 3, .u.f3 = whisky3alt      },
+	{ .sig = "4"     , .dim = 4, .u.f4 = whisky4         },
+	{ .sig = "4alt"  , .dim = 4, .u.f4 = whisky4alt      },
+	{ .sig = "5"     , .dim = 5, .u.f5 = whisky5         },
+	{ .sig = "5alt"  , .dim = 5, .u.f5 = whisky5alt      },
+	{ .sig = "sha256", .dim = 8 },
 	{ .dim = 0 }
 };
 
