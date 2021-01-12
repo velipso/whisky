@@ -4,7 +4,9 @@ whisky
 Whisky is a collection of stateless random number generators.  These can be thought of as tiny hash
 functions, or pure noise functions.
 
-Feel free to copy/paste them directly into your projects.
+Feel free to copy/paste them directly into your projects -- all you need is
+[`whisky.h`](https://github.com/velipso/whisky/blob/main/whisky.h)!  Everything else in the repo is
+supplemental.
 
 I'm in the process of generating tens of thousands of functions, and analyzing them to find the best
 ones using the [dieharder 3.31.1](http://webhome.phy.duke.edu/~rgb/General/dieharder.php)
@@ -15,13 +17,13 @@ This repo will eventually contain the best functions I've found.
 
 ### NOTE: I am still actively searching!
 
-Progress: 20%
+Progress: 40%
 
 | Dimension | Status |
 |:---------:|:------:|
 |     1     |   ⏳   |
 |     2     |   ✅   |
-|     3     |   ⏳   |
+|     3     |   ✅   |
 |     4     |   ⏳   |
 |     5     |   ⏳   |
 
@@ -48,8 +50,8 @@ another 32-bits from `whisky2alt` using the same input.
 All the functions are in the single header file `whisky.h` and declared `static`.  This allows the
 compiler to inline functions where possible.
 
-If you need higher dimensions, you can chain hashes.  For example, if you need 10-dimensions, you
-could do something like `whisky2(whisky5(...), whisky5alt(...))`.
+If you need higher dimensions, you can chain hashes.  For example, if you need 9-dimensions, you
+could do something like `whisky2(whisky4(...), whisky5(...))`.
 
 SHA-256
 =======
@@ -244,13 +246,13 @@ with the results.
 
 ### Summary of Results
 
-| Dimension | Functions searched | Tests performed | Primary ID   | Alternate ID |
-|:---------:|-------------------:|----------------:|--------------|--------------|
-|     1     |                TBD |                 |              |              |
-|     2     |             19,000 |         315,331 | `b 2 12 379` | `b 2 12 536` |
-|     3     |                TBD |                 |              |              |
-|     4     |                TBD |                 |              |              |
-|     5     |                TBD |                 |              |              |
+| Dimension | Functions searched | Tests performed | Primary ID    | Alternate ID   |
+|:---------:|-------------------:|----------------:|---------------|----------------|
+|     1     |                TBD |                 |               |                |
+|     2     |             19,000 |         315,331 | `b 2 12 379`  | `b 2 12 536`   |
+|     3     |             87,000 |         322,805 | `f 3 15 3017` | `a 3 15 13985` |
+|     4     |                TBD |                 |               |                |
+|     5     |                TBD |                 |               |                |
 
 RNG Generator
 =============

@@ -61,7 +61,7 @@ Subcommands:
   score   Rank functions given the current state on disk
 ${subcommand && subcommand !== 'step' ? '' : `
 * step <total> <process> <dimensions> <quality>
-       [-f|-w]
+       [-f] [-w <weak>] [-s <skip...>]
 
   Calculates the next step needed to analyze the space of functions,
   and executes dieharder to gather the information.  Exits with 1 if
@@ -76,7 +76,8 @@ ${subcommand && subcommand !== 'step' ? '' : `
     <dimensions>  How many inputs to the hash function
     <quality>     How many operations allowed in the hash
     -f            Reject functions that fail any test
-    -w            Reject functions that fail any test or are weak
+    -w <weak>     Reject functions that exceed <weak> weak results
+    -s <skip...>  List of indicies to skip (ex: 10502,11523)
 `}${subcommand && subcommand !== 'print' ? '' : `
 * print <process> <dimensions> <quality> <index>
 
@@ -92,7 +93,7 @@ ${subcommand && subcommand !== 'step' ? '' : `
     <index>       Unique identifier for an individual function
 `}${subcommand && subcommand !== 'score' ? '' : `
 * score [<process>] <dimensions> <quality> [<index>]
-        [-i|-f] [-s] [-n] [-c]
+        [-i|-f] [-s] [-n] [-c] [-l <limit>]
 
   Given the current knowledge, calculates the min/max score of the
   selected functions.
@@ -116,14 +117,30 @@ ${subcommand && subcommand !== 'step' ? '' : `
     -s            Only show summary table
     -n            Normalize scores between 0-1000
     -c            Show code along with rankings
+    -l <limit>    Only use the first <limit> functions
 `}`);
   process.exit(exit);
 }
 
 async function stepMain(args){
   const allowFailures = !argFlag(args, '-f');
-  const allowWeaks = !argFlag(args, '-w');
   const skipEmail = argFlag(args, '-e');
+
+  let limitWeak = false;
+  if (args.includes('-w')){
+    const p = args.splice(args.indexOf('-w'), 2);
+    limitWeak = parseFloat(p[1]);
+    if (isNaN(limitWeak))
+      return usage(1, 'step');
+  }
+
+  let skipIndex = [];
+  if (args.includes('-s')){
+    const p = args.splice(args.indexOf('-s'), 2);
+    skipIndex = p[1].split(',').map(parseFloat);
+    if (skipIndex.some(isNaN))
+      return usage(1, 'step');
+  }
 
   if (args.length !== 4)
     return usage(1, 'step');
@@ -163,10 +180,10 @@ async function stepMain(args){
 
   const scores = state.gen.slice(0, total)
     .map((a, i) => scoreGen(proc, dim, quality, a, i))
-    .filter(a => state.ignore[a.i] === undefined)
+    .filter(a => state.ignore[a.i] === undefined && !skipIndex.includes(a.i))
     .filter(a => !(
-      (!allowFailures && a.fail) ||
-      (!allowWeaks && a.weak)
+      (!allowFailures && a.fail > 0) ||
+      (limitWeak !== false && a.weak > limitWeak)
     ))
     .sort(sortBy('maxScore', 'i'));
 
@@ -254,13 +271,22 @@ async function stepMain(args){
 
   const putResult = (testKey, pvalue) => {
     // only overwrite if we have a worse result
-    if (typeof result[testKey] === 'number' &&
-      Math.abs(0.5 - pvalue) < Math.abs(0.5 - result[testKey]))
-      return false;
+    if (typeof result[testKey] === 'number'){
+      if (Math.abs(0.5 - pvalue) < Math.abs(0.5 - result[testKey]))
+        return false;
+      switch (judge(result[testKey])){
+        case 'FAIL': nx.fail--; break;
+        case 'WEAK': nx.weak--; break;
+      }
+    }
     result[testKey] = pvalue;
     saveState();
-    return ((!allowFailures || !allowWeaks) && judge(pvalue) === 'FAIL') ||
-      (!allowWeaks && judge(pvalue) === 'WEAK');
+    switch (judge(pvalue)){
+      case 'FAIL': nx.fail++; break;
+      case 'WEAK': nx.weak++; break;
+    }
+    return (!allowFailures && nx.fail > 0) ||
+      (limitWeak !== false && nx.weak > limitWeak);
   };
 
   // compile the driver program
@@ -385,6 +411,14 @@ function scoreMain(args){
   const normalize = argFlag(args, '-n');
   const showCode = argFlag(args, '-c');
 
+  let limit = false;
+  if (args.includes('-l')){
+    const p = args.splice(args.indexOf('-l'), 2);
+    limit = parseFloat(p[1]);
+    if (isNaN(limit))
+      return usage(1, 'score');
+  }
+
   if (args.length < 2 || args.length > 4)
     return usage(1, 'score');
 
@@ -422,12 +456,14 @@ function scoreMain(args){
       minSum /= sumTotal;
       maxSum /= sumTotal;
     }
+    const single = minSum.toFixed(2) === maxSum.toFixed(2);
     console.log(
       '...          ' +
       lpad(lpScore, minSum.toFixed(2)).blue +
-      (minSum.toFixed(2) === maxSum.toFixed(2) ? '' :
+      (single ? '' :
         ' <-> '.gray + lpad(lpScore, maxSum.toFixed(2)).blue),
-      `<= average of top ${sumTotal}`.gray
+      `<= top ${sumTotal} avg`.gray,
+      single ? '' : `(mid `.gray + ((minSum + maxSum) * 0.5).toFixed(2).blue + `)`.gray
     );
     list.slice(-4).forEach((sc, i) => {
       console.log(sc.str + (i === 3 ? ' (worst)' : ' (bad)').brRed);
@@ -453,6 +489,8 @@ function scoreMain(args){
     )
     .forEach(f => {
       const state = JSON.parse(readFileSync(f.file, 'utf8'));
+      if (limit !== false)
+        state.gen.splice(limit);
 
       let totalTests = 0;
       state.gen.forEach(a => totalTests += Object.keys(a).length);
@@ -464,11 +502,8 @@ function scoreMain(args){
         .map((sc, i) => {
           const a = state.gen[sc.i];
           const keys = Object.keys(a);
-          let nFail = 0;
-          for (const k of keys)
-            nFail += judge(a[k]) === 'FAIL' ? 1 : 0;
           sc.numTests = keys.length;
-          sc.percFail = keys.length > 0 ? nFail * 100 / keys.length : 999;
+          sc.percFail = keys.length > 0 ? sc.fail * 100 / keys.length : 999;
           return sc;
         })
         .sort(sortBy(sortKey, '^numTests', 'i'));
@@ -488,7 +523,7 @@ function scoreMain(args){
         (sc.minScore.toFixed(2) === sc.maxScore.toFixed(2)
           ? ''
           : ` <-> ` + lpad(lpScore, sc.maxScore.toFixed(2)).green) +
-        (sc.percFail !== false ? lpad(8, `${sc.percFail.toFixed(1)}%`).brRed : '');
+        (`${lpad(8, `${sc.fail}`).brRed}/${`${sc.weak}`.brYellow}`);
       scores.forEach(genStr);
 
       if (index){
@@ -643,11 +678,11 @@ function scoreGen(proc, dim, quality, a, i){
   }
   if (nextTest === testInfo.length)
     nextTest = false;
-  let fail = false, weak = false;
+  let fail = 0, weak = 0;
   keys.forEach(k => {
     switch (judge(a[k])){
-      case 'FAIL': fail = weak = true; break;
-      case 'WEAK': weak = true; break;
+      case 'FAIL': fail++; break;
+      case 'WEAK': weak++; break;
     }
   });
   return {proc, dim, quality, i, id, idColor, minScore, maxScore, nextTest, nextAxis, fail, weak};
