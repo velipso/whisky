@@ -41,8 +41,17 @@ double whiskyXd(...);
 * `X` - the number of inputs (dimensions), from `1` to `5`
 * `[alt]` - (optional) alternate hash function of equal quality
 
-For example, `whisky2` is a hash function with two arguments, and the `whisky2alt` function is of
-equal quality compared to `whisky2`.
+For example, `whisky2` is a hash function with two arguments:
+
+```c
+static uint32_t whisky2(uint32_t i0, uint32_t i1){
+  ...mix up everything...
+  return mixedValue;
+}
+```
+
+The `whisky2alt` has function also takes two arguments, and is equal quality compared to `whisky2`
+-- it just mixes things differently.
 
 Having an alternate is useful if you need a 64-bit result -- you can get 32-bits from `whisky2` and
 another 32-bits from `whisky2alt` using the same input.
@@ -88,8 +97,8 @@ For convenience, I've wired up the hashing functions to the floating point funct
 you can call:
 
 ```c
-float randomValue = whisky1f(123);
-double randomValue = whisky1d(123);
+float randomFloat = whisky2f(123, 456);
+double randomDouble = whisky2d(123, 456);
 ```
 
 These will return the same value for the same input, but the `double` has more precision.
