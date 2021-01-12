@@ -45,7 +45,7 @@ For example, `whisky2` is a hash function with two arguments:
 
 ```c
 static uint32_t whisky2(uint32_t i0, uint32_t i1){
-  ...mix up everything...
+  ...mix up the inputs i0 and i1...
   return mixedValue;
 }
 ```
@@ -53,7 +53,7 @@ static uint32_t whisky2(uint32_t i0, uint32_t i1){
 The `whisky2alt` has function also takes two arguments, and is equal quality compared to `whisky2`
 -- it just mixes things differently.
 
-Having an alternate is useful if you need a 64-bit result -- you can get 32-bits from `whisky2` and
+Having an alternate is useful if you need a 64-bit result.  You can get 32-bits from `whisky2` and
 another 32-bits from `whisky2alt` using the same input.
 
 All the functions are in the single header file `whisky.h` and declared `static`.  This allows the
