@@ -249,16 +249,6 @@ Once you know the best functions, you can print them with the `print` subcommand
 node whisky.js print b 2 12 379
 ```
 
-### Summary of Results
-
-| Dimension | Functions searched | Tests performed | Primary ID    | Alternate ID   |
-|:---------:|-------------------:|----------------:|---------------|----------------|
-|     1     |                TBD |                 |               |                |
-|     2     |             19,000 |         315,331 | `b 2 12 379`  | `b 2 12 536`   |
-|     3     |             87,000 |         322,805 | `f 3 15 3017` | `a 3 15 13985` |
-|     4     |             20,000 |          90,459 | `e 4 18 3232` | `f 4 18 144`   |
-|     5     |                TBD |                 |               |                |
-
 ### Strategy
 
 The strategy I used for finding the whisky functions was to try different qualities for 10
@@ -284,6 +274,16 @@ node whisky.js step 2000 a 4 18 -f -w 21; do:; done
 
 The weak threshold (21) was chosen via: floor(272 × dimensions × 0.02) -- this aims for less
 than 2% of the tests being marked weak.
+
+### Summary of Results
+
+| Dimension | Functions searched | Tests performed | Primary ID    | Alternate ID   |
+|:---------:|-------------------:|----------------:|---------------|----------------|
+|     1     |                TBD |                 |               |                |
+|     2     |             19,000 |         315,331 | `b 2 12 379`  | `b 2 12 536`   |
+|     3     |             87,000 |         322,805 | `f 3 15 3017` | `a 3 15 13985` |
+|     4     |             20,000 |          90,459 | `e 4 18 3232` | `f 4 18 144`   |
+|     5     |                TBD |                 |               |                |
 
 RNG Generator
 =============
