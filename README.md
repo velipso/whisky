@@ -282,7 +282,7 @@ quality was found, then run for much larger numbers, but reject failures and wea
 node whisky.js step 2000 a 4 18 -f -w 21; do:; done
 ```
 
-The weak threshold (21) was chosen via: floor(272 &mul; dimensions &mul; 0.02) -- this aims for less
+The weak threshold (21) was chosen via: floor(272 × dimensions × 0.02) -- this aims for less
 than 2% of the tests being marked weak.
 
 RNG Generator
