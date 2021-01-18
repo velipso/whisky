@@ -17,14 +17,14 @@ This repo will eventually contain the best functions I've found.
 
 ### NOTE: I am still actively searching!
 
-Progress: 40%
+Progress: 60%
 
 | Dimension | Status |
 |:---------:|:------:|
 |     1     |   ⏳   |
 |     2     |   ✅   |
 |     3     |   ✅   |
-|     4     |   ⏳   |
+|     4     |   ✅   |
 |     5     |   ⏳   |
 
 API
@@ -139,7 +139,7 @@ Notice that `seed` and `i` are global variables, and no arguments are passed int
 Compare that to `whisky1`, provided in this repo:
 
 ```c
-uint32_t whisky1(uint32_t i0){
+static uint32_t whisky1(uint32_t i0){
   TODO
 }
 ```
@@ -260,7 +260,7 @@ with the results.
 |     1     |                TBD |                 |               |                |
 |     2     |             19,000 |         315,331 | `b 2 12 379`  | `b 2 12 536`   |
 |     3     |             87,000 |         322,805 | `f 3 15 3017` | `a 3 15 13985` |
-|     4     |                TBD |                 |               |                |
+|     4     |             20,000 |          90,459 | `e 4 18 3232` | `f 4 18 144`   |
 |     5     |                TBD |                 |               |                |
 
 RNG Generator
