@@ -249,10 +249,6 @@ Once you know the best functions, you can print them with the `print` subcommand
 node whisky.js print b 2 12 379
 ```
 
-The strategy I used for finding the whisky functions was to start small and only search across 10
-functions.  Once that process finished, I increased the total to 50, 100, etc, until I was satisfied
-with the results.
-
 ### Summary of Results
 
 | Dimension | Functions searched | Tests performed | Primary ID    | Alternate ID   |
@@ -262,6 +258,32 @@ with the results.
 |     3     |             87,000 |         322,805 | `f 3 15 3017` | `a 3 15 13985` |
 |     4     |             20,000 |          90,459 | `e 4 18 3232` | `f 4 18 144`   |
 |     5     |                TBD |                 |               |                |
+
+### Strategy
+
+The strategy I used for finding the whisky functions was to try different qualities for 10
+functions until I found a quality that had an average score around 300.  So for example, run this
+command for `a`-`f`:
+
+```
+node whisky.js step 10 a 4 17; do:; done
+```
+
+Once finished, score it:
+
+```
+node whisky.js score 4 17 -s -n
+```
+
+If the average of the top 10 was over 300, then increase quality by one, and try again.  Once a good
+quality was found, then run for much larger numbers, but reject failures and weak functions:
+
+```
+node whisky.js step 2000 a 4 18 -f -w 21; do:; done
+```
+
+The weak threshold (21) was chosen via: floor(272 &mul; dimensions &mul; 0.02) -- this aims for less
+than 2% of the tests being marked weak.
 
 RNG Generator
 =============
