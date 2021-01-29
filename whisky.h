@@ -13,7 +13,7 @@
 //
 // HASH FUNCTIONS
 //
-// Note: both the primary and alternate pass all dieharder tests and are of equal quality
+// Note: both the primary and alternate(s) pass all dieharder tests and are of equal quality
 //
 
 static uint32_t whisky1(uint32_t i0){
@@ -83,11 +83,42 @@ static uint32_t whisky4alt(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3){
 }
 
 static uint32_t whisky5(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4){
-	return i0 + i1 + i2 + i3 + i4; // TODO: this!
+	uint32_t z0 = (i1 *  367353443) ^ i3;
+	uint32_t z1 = (z0 * 2733269467) ^ i4;
+	uint32_t z2 = (i2 *  212907043) ^ z1;
+	uint32_t z3 = (i0 *  134452789) ^ z2;
+	uint32_t z4 = (z3 *  859833071) ^ z3;
+	uint32_t z5 = (z4 * 2868415003) ^ z2;
+	uint32_t z6 = (z5 *  232681019) ^ (z3 >> 12);
+	uint32_t z7 = (z6 *  219317647) ^ z5;
+	uint32_t z8 = (z7 * 1558475939) ^ z6;
+	uint32_t z9 = (z8 * 3631493917) ^ (z8 >> 19);
+	return z9;
 }
 
 static uint32_t whisky5alt(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4){
-	return i0 + i1 + i2 + i3 + i4; // TODO: this!
+	uint32_t z0 = (i4 *  907294499) ^ i2;
+	uint32_t z1 = (i3 * 2422727737) ^ i1;
+	uint32_t z2 = (z1 * 1912919969) ^ z0;
+	uint32_t z3 = (i0 * 2982886499) ^ z2;
+	uint32_t z4 = (z3 * 1058057851) ^ z3;
+	uint32_t z5 = (z4 * 1205991539) ^ z3;
+	uint32_t z6 = (z5 * 1068665347) ^ (z5 >> 16) ^ (z5 << 16);
+	uint32_t z7 = (z6 * 4277956667) ^ z2;
+	uint32_t z8 = (z7 *  952786151) ^ (z7 >>  7);
+	return z8;
+}
+
+static uint32_t whisky5alt2(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4){
+	uint32_t z0 = (i3 * 2364625957) ^ i0;
+	uint32_t z1 = (i2 * 1831517539) ^ i4;
+	uint32_t z2 = (z0 *  526395601) ^ z1;
+	uint32_t z3 = (i1 *  265671227) ^ (z2 >> 23) ^ z2;
+	uint32_t z4 = (z3 *  228188333) ^ (z3 >> 27) ^ z3;
+	uint32_t z5 = (z4 * 4046791003) ^ z1;
+	uint32_t z6 = (z5 *  466887391) ^ (z5 >> 14);
+	uint32_t z7 = (z6 *  430028471) ^ (z6 >> 17);
+	return z7;
 }
 
 // performs a SHA-256 hash on exactly 32 bytes

@@ -43,6 +43,7 @@ static struct {
 	{ .sig = "4alt"  , .dim = 4, .u.f4 = whisky4alt      },
 	{ .sig = "5"     , .dim = 5, .u.f5 = whisky5         },
 	{ .sig = "5alt"  , .dim = 5, .u.f5 = whisky5alt      },
+	{ .sig = "5alt2" , .dim = 5, .u.f5 = whisky5alt2     },
 	{ .sig = "sha256", .dim = 8 },
 	{ .dim = 0 }
 };
