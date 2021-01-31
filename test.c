@@ -35,12 +35,16 @@ static struct {
 } streams[] = {
 	{ .sig = "1"     , .dim = 1, .u.f1 = whisky1         },
 	{ .sig = "1alt"  , .dim = 1, .u.f1 = whisky1alt      },
+	{ .sig = "1alt2" , .dim = 1, .u.f1 = whisky1alt2     },
 	{ .sig = "2"     , .dim = 2, .u.f2 = whisky2         },
 	{ .sig = "2alt"  , .dim = 2, .u.f2 = whisky2alt      },
+	{ .sig = "2alt2" , .dim = 2, .u.f2 = whisky2alt2     },
 	{ .sig = "3"     , .dim = 3, .u.f3 = whisky3         },
 	{ .sig = "3alt"  , .dim = 3, .u.f3 = whisky3alt      },
+	{ .sig = "3alt2" , .dim = 3, .u.f3 = whisky3alt2     },
 	{ .sig = "4"     , .dim = 4, .u.f4 = whisky4         },
 	{ .sig = "4alt"  , .dim = 4, .u.f4 = whisky4alt      },
+	{ .sig = "4alt2" , .dim = 4, .u.f4 = whisky4alt2     },
 	{ .sig = "5"     , .dim = 5, .u.f5 = whisky5         },
 	{ .sig = "5alt"  , .dim = 5, .u.f5 = whisky5alt      },
 	{ .sig = "5alt2" , .dim = 5, .u.f5 = whisky5alt2     },
@@ -66,7 +70,7 @@ static int usage(int ret){
 	while (streams[i].dim){
 		printf("  %s ", streams[i].sig);
 		i++;
-		if ((i % 4) == 0 && streams[i].dim)
+		if ((i % 6) == 0 && streams[i].dim)
 			printf("\n");
 	}
 	printf("\n");

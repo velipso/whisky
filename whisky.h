@@ -13,15 +13,28 @@
 //
 // HASH FUNCTIONS
 //
-// Note: both the primary and alternate(s) pass all dieharder tests and are of equal quality
+// Note: the primary and alternates pass all dieharder tests and are of equal quality
 //
 
 static uint32_t whisky1(uint32_t i0){
-	return i0; // TODO: this!
+	uint32_t z0 = (i0 * 1831267127) ^ i0;
+	uint32_t z1 = (z0 * 3915839201) ^ (z0 >> 20);
+	uint32_t z2 = (z1 * 1561867961) ^ (z1 >> 24);
+	return z2;
 }
 
 static uint32_t whisky1alt(uint32_t i0){
-	return i0; // TODO: this!
+	uint32_t z0 = (i0 * 1850913749) ^ i0;
+	uint32_t z1 = (z0 *  499907189) ^ (z0 >> 14);
+	uint32_t z2 = (z1 *  237314647) ^ (z1 >> 24);
+	return z2;
+}
+
+static uint32_t whisky1alt2(uint32_t i0){
+	uint32_t z0 = (i0 *  270324709) ^ i0;
+	uint32_t z1 = (z0 * 1880041297) ^ (z0 >> 17);
+	uint32_t z2 = (z1 * 1591606349) ^ (z1 >> 24);
+	return z2;
 }
 
 static uint32_t whisky2(uint32_t i0, uint32_t i1){
@@ -41,6 +54,15 @@ static uint32_t whisky2alt(uint32_t i0, uint32_t i1){
 	return z4;
 }
 
+static uint32_t whisky2alt2(uint32_t i0, uint32_t i1){
+	uint32_t z0 = (i0 * 2627356049) ^ i1;
+	uint32_t z1 = (z0 *  378291119) ^ i1;
+	uint32_t z2 = (z1 *  357846343) ^ (z1 >> 18);
+	uint32_t z3 = (z2 *  144068209) ^ z0;
+	uint32_t z4 = (z3 * 1883673907) ^ (z3 >> 17);
+	return z4;
+}
+
 static uint32_t whisky3(uint32_t i0, uint32_t i1, uint32_t i2){
 	uint32_t z0 = (i0 *  271754957) ^ i2;
 	uint32_t z1 = (i1 *  772196531) ^ z0;
@@ -57,6 +79,15 @@ static uint32_t whisky3alt(uint32_t i0, uint32_t i1, uint32_t i2){
 	uint32_t z2 = (z1 *  273200869) ^ (z1 >> 11);
 	uint32_t z3 = (z2 * 1031467691) ^ (z2 >> 24) ^ (z2 <<  8);
 	uint32_t z4 = (z3 * 1663048183) ^ (z3 >> 17);
+	return z4;
+}
+
+static uint32_t whisky3alt2(uint32_t i0, uint32_t i1, uint32_t i2){
+	uint32_t z0 = (i0 *  460493531) ^ i1;
+	uint32_t z1 = (z0 * 4217964173) ^ (i2 >>  4);
+	uint32_t z2 = (i2 *  151288633) ^ (z1 >> 11) ^ z1;
+	uint32_t z3 = (z2 * 1894377257) ^ (z2 >> 11);
+	uint32_t z4 = (z3 * 1640414617) ^ (z3 >> 18);
 	return z4;
 }
 
@@ -80,6 +111,16 @@ static uint32_t whisky4alt(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3){
 	uint32_t z5 = (z4 *  192033599) ^ z0;
 	uint32_t z6 = (z5 * 2308741217) ^ (z4 >> 20);
 	return z6;
+}
+
+static uint32_t whisky4alt2(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3){
+	uint32_t z0 = (i1 *  895359197) ^ (i0 >> 21) ^ i0;
+	uint32_t z1 = (i3 *  275340049) ^ z0;
+	uint32_t z2 = (i2 * 2503964471) ^ z1;
+	uint32_t z3 = (z2 *  377898251) ^ (z2 >> 21) ^ z2;
+	uint32_t z4 = (z3 *  400831931) ^ (z3 >> 16);
+	uint32_t z5 = (z4 * 1732967161) ^ (z4 >> 20);
+	return z5;
 }
 
 static uint32_t whisky5(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4){
