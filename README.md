@@ -3,7 +3,7 @@ whisky
 
 Whisky is a collection of stateless random number generators.  These can be thought of as tiny hash
 functions, or pure noise functions.  Stateless RNGs are useful for a
-[variety of reasons](https://github.com/velipso/whisky/blob/master/docs/why.md).
+[variety of reasons](https://github.com/velipso/whisky/blob/main/docs/why.md).
 
 All you need is [`whisky.h`](https://github.com/velipso/whisky/blob/main/whisky.h)!  It includes
 the hash functions, a short SHA-256 implementation, and some utility functions for creating floating
@@ -13,12 +13,12 @@ Everything else in this repo is supplemental for those curious about how these f
 generated and tested.
 
 These functions were found by searching through
-[hundreds of thousands](https://github.com/velipso/whisky/blob/master/docs/search.md) of
+[hundreds of thousands](https://github.com/velipso/whisky/blob/main/docs/search.md) of
 candidates.  They have been tested against the
 [dieharder 3.31.1](http://webhome.phy.duke.edu/~rgb/General/dieharder.php)
 statistical tests
 ([screenshot](https://raw.githubusercontent.com/velipso/whisky/main/screenshot.png)), and
-[pass](https://github.com/velipso/whisky/blob/master/docs/reports.md) with flying colors.
+[pass](https://github.com/velipso/whisky/blob/main/docs/reports.md) with flying colors.
 
 API
 ===
@@ -102,8 +102,8 @@ These will return the same value for the same input, but the `double` has more p
 More Info
 =========
 
-* [Why a stateless RNG?](https://github.com/velipso/whisky/blob/master/docs/why.md)
-* [Final Reports](https://github.com/velipso/whisky/blob/master/docs/reports.md)
-* [Search Script](https://github.com/velipso/whisky/blob/master/docs/search.md)
-* [RNG Generator](https://github.com/velipso/whisky/blob/master/docs/generator.md)
-* [Why do this at all?](https://github.com/velipso/whisky/blob/master/docs/fun.md)
+* [Why a stateless RNG?](https://github.com/velipso/whisky/blob/main/docs/why.md)
+* [Final Reports](https://github.com/velipso/whisky/blob/main/docs/reports.md)
+* [Search Script](https://github.com/velipso/whisky/blob/main/docs/search.md)
+* [RNG Generator](https://github.com/velipso/whisky/blob/main/docs/generator.md)
+* [Why do this at all?](https://github.com/velipso/whisky/blob/main/docs/fun.md)
