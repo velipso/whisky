@@ -5,7 +5,7 @@ Whisky is a collection of stateless random number generators.  These can be thou
 functions, or pure noise functions.  Stateless RNGs are useful for a
 [variety of reasons](https://github.com/velipso/whisky/blob/main/docs/why.md).
 
-All you need is [`whisky.h`](https://github.com/velipso/whisky/blob/main/whisky.h)!  It includes
+**All you need is [`whisky.h`](https://github.com/velipso/whisky/blob/main/whisky.h)!**  It includes
 the hash functions, a short SHA-256 implementation, and some utility functions for creating floating
 point numbers.
 
