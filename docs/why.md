@@ -73,7 +73,17 @@ pass the seed as a parameter `whisky3(x, y, seed)`.
 Since there isn't any global state, the whisky functions are easy for compilers to optimize/inline,
 and are thread-safe.  There are no side-effects!
 
-### 4. Independent procedural generation
+### 4. Easy to Analyze
+
+Stateful RNGs can be really tricky to analyze.  What is their period?  Are there problematic seeds?
+How well does it perform?  Is the performance unpredictable?  Does it need to be initialized in a
+special way?
+
+The whisky collection is dead simple to analyze.  The `whisky1` function has a period of
+2<sup>32</sup>.  It has no problematic inputs.  It performs the exact same regardless of the input.
+There is no initialization.
+
+### 5. Independent procedural generation
 
 Suppose you create a function that draws random flowers.
 
