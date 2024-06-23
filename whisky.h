@@ -1,8 +1,8 @@
 //
-// Whisky - a collection of stateless RNGs
-// by Sean Connelly (@velipso), https://sean.cm
-// The Unlicense License
+// whisky - a collection of stateless RNGs
+// by Sean Connelly (@velipso), https://sean.fun
 // Project Home: https://github.com/velipso/whisky
+// SPDX-License-Identifier: 0BSD
 //
 
 #ifndef WHISKY__H
